@@ -29,6 +29,40 @@ cdef extern from "lbfgs.h":
         LBFGS_LINESEARCH_BACKTRACKING_WOLFE,
         LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE
 
+    cdef enum ReturnCode:
+        LBFGS_SUCCESS,
+        LBFGS_ALREADY_MINIMIZED,
+        LBFGSERR_UNKNOWNERROR,
+        LBFGSERR_LOGICERROR,
+        LBFGSERR_OUTOFMEMORY,
+        LBFGSERR_CANCELED,
+        LBFGSERR_INVALID_N,
+        LBFGSERR_INVALID_N_SSE,
+        LBFGSERR_INVALID_X_SSE,
+        LBFGSERR_INVALID_EPSILON,
+        LBFGSERR_INVALID_TESTPERIOD,
+        LBFGSERR_INVALID_DELTA,
+        LBFGSERR_INVALID_LINESEARCH,
+        LBFGSERR_INVALID_MINSTEP,
+        LBFGSERR_INVALID_MAXSTEP,
+        LBFGSERR_INVALID_FTOL,
+        LBFGSERR_INVALID_WOLFE,
+        LBFGSERR_INVALID_GTOL,
+        LBFGSERR_INVALID_XTOL,
+        LBFGSERR_INVALID_MAXLINESEARCH,
+        LBFGSERR_INVALID_ORTHANTWISE,
+        LBFGSERR_INVALID_ORTHANTWISE_START,
+        LBFGSERR_INVALID_ORTHANTWISE_END,
+        LBFGSERR_OUTOFINTERVAL,
+        LBFGSERR_INCORRECT_TMINMAX,
+        LBFGSERR_ROUNDING_ERROR,
+        LBFGSERR_MINIMUMSTEP,
+        LBFGSERR_MAXIMUMSTEP,
+        LBFGSERR_MAXIMUMLINESEARCH,
+        LBFGSERR_MAXIMUMITERATION,
+        LBFGSERR_WIDTHTOOSMALL,
+        LBFGSERR_INVALIDPARAMETERS,
+        LBFGSERR_INCREASEGRADIENT
 
     ctypedef struct lbfgs_parameter_t:
         int m
@@ -80,7 +114,7 @@ cdef lbfgsfloatval_t call_eval(void *cb_data_v,
     x_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE, <void *>x)
     g_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE, <void *>g)
 
-    return f(x_array, g_array)
+    return f(x_array, g_array, *args)
 
 
 # Callback into Python progress reporting callable.
@@ -118,7 +152,7 @@ cdef lbfgsfloatval_t *copy_to_lbfgs(x):
     return x_copy
 
 
-LINE_SEARCH_ALGO = {
+_LINE_SEARCH_ALGO = {
     'default' : LBFGS_LINESEARCH_DEFAULT,
     'morethuente' : LBFGS_LINESEARCH_MORETHUENTE,
     'armijo' : LBFGS_LINESEARCH_BACKTRACKING_ARMIJO,
@@ -135,7 +169,7 @@ cdef class LBFGS(object):
     def __init__(self):
         lbfgs_parameter_init(&self.params)
 
-    LINE_SEARCH_ALGORITHMS = LINE_SEARCH_ALGO.keys()
+    LINE_SEARCH_ALGORITHMS = _LINE_SEARCH_ALGO.keys()
 
     property m:
         def __set__(self, int val):
@@ -159,7 +193,7 @@ cdef class LBFGS(object):
 
     property linesearch:
         def __set__(self, algorithm):
-            self.params.linesearch = LINE_SEARCH_ALGO[algorithm]
+            self.params.linesearch = _LINE_SEARCH_ALGO[algorithm]
 
     property min_step:
         def __set__(self, double val):
@@ -197,7 +231,6 @@ cdef class LBFGS(object):
         def __set__(self, int val):
             self.params.orthantwise_end = val
 
-
     def minimize(self, f, x0, progress=None, args=()):
         """Minimize a function using LBFGS or OWL-QN
 
@@ -210,9 +243,12 @@ cdef class LBFGS(object):
         x0 : array-like
             Initial values. A copy of this array is made prior to optimization.
         progress : callable(x, g, fx, xnorm, gnorm, step, k, ls)
+        args : sequence
+            Arbitrary list of arguments, passed on to the function f as *args.
         """
 
         cdef int n
+        cdef int r
         cdef lbfgsfloatval_t *x
         cdef np.ndarray x_final
 
@@ -225,9 +261,14 @@ cdef class LBFGS(object):
         r = lbfgs(n, x, <lbfgsfloatval_t *>x_final.data, call_eval,
                   call_progress, <void *>callback_data, &self.params)
 
-        if r == 0:
+        if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
             return x_final
+        # TODO handle errors
 
 
 def fmin_lbfgs(f, x0, progress=None, args=()):
+    """Minimize a function using LBFGS or OWL-QN
+
+    See LBFGS.minimize for full documentation.
+    """
     return LBFGS().minimize(f, x0, progress=progress, args=args)

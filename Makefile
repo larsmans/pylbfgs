@@ -2,7 +2,7 @@ all: lbfgs.so
 
 clean:
 	rm -rf build
-	rm -f lbfgs.{c,o,so}
+	rm -f 'lbfgs.{c,o,so}'
 
 install: all
 	python setup.py install
