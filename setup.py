@@ -15,6 +15,8 @@ setup(
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck",
     author_email="L.J.Buitinck@uva.nl",
+
     cmdclass={"build_ext" : build_ext},
     ext_modules=ext_modules,
+    install_requires=["numpy"],
 )
