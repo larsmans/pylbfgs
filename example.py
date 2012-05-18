@@ -1,8 +1,8 @@
 """Trivial example: minimize x**2 from any start value"""
 
 import lbfgs
-import numpy as np
 import sys
+
 
 def f(x, g):
     """Returns x**2 and stores its gradient in g[0]"""
@@ -10,5 +10,10 @@ def f(x, g):
     g[0] = 2*x
     return x**2
 
-x0 = np.asarray([float(sys.argv[1])])
-print lbfgs.fmin_lbfgs(f, x0)[0]
+
+def progress(x, g, f_x, xnorm, gnorm, step, k, ls):
+    print("x = %8.2g     f(x) = %8.2g     f'(x) = %8.2g" % (x, f_x, g))
+
+
+x0 = float(sys.argv[1])
+print("Minimum found: %f" % lbfgs.fmin_lbfgs(f, x0, progress)[0])

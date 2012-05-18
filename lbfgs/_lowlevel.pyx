@@ -136,7 +136,9 @@ cdef int call_progress(void *cb_data_v,
         g_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE,
                                                <void *>g)
 
-        return progress_fn(x_array, g_array, fx, xnorm, gnorm, step, k, ls)
+        r = progress_fn(x_array, g_array, fx, xnorm, gnorm, step, k, ls)
+        # TODO what happens when the callback returns the wrong type?
+        return 0 if r is None else r
     else:
         return 0
 
