@@ -157,37 +157,51 @@ _LINE_SEARCH_ALGO = {
 }
 
 _ERROR_MESSAGES = {
-        LBFGSERR_UNKNOWNERROR : "Unknown error." ,
-        LBFGSERR_LOGICERROR : "Logic error.",
-        LBFGSERR_OUTOFMEMORY : "Insufficient memory.",
-        LBFGSERR_CANCELED : "The minimization process has been canceled.",
-        LBFGSERR_INVALID_N : "Invalid number of variables specified.",
-        LBFGSERR_INVALID_N_SSE : "Invalid number of variables (for SSE) specified.",
-        LBFGSERR_INVALID_X_SSE : "The array x must be aligned to 16 (for SSE).",
-        LBFGSERR_INVALID_EPSILON : "Invalid parameter epsilon specified.",
-        LBFGSERR_INVALID_TESTPERIOD : "Invalid parameter past specified.",
-        LBFGSERR_INVALID_DELTA : "Invalid parameter delta specified.",
-        LBFGSERR_INVALID_LINESEARCH : "Invalid parameter linesearch specified.",
-        LBFGSERR_INVALID_MINSTEP : "Invalid parameter max_step specified.",
-        LBFGSERR_INVALID_MAXSTEP : "Invalid parameter max_step specified.",
-        LBFGSERR_INVALID_FTOL : "Invalid parameter ftol specified.",
-        LBFGSERR_INVALID_WOLFE : "Invalid parameter wolfe specified.",
-        LBFGSERR_INVALID_GTOL : "Invalid parameter gtol specified.",
-        LBFGSERR_INVALID_XTOL : "Invalid parameter xtol specified.",
-        LBFGSERR_INVALID_MAXLINESEARCH : "Invalid parameter max_linesearch specified.",
-        LBFGSERR_INVALID_ORTHANTWISE : "Invalid parameter orthantwise_c specified.",
-        LBFGSERR_INVALID_ORTHANTWISE_START : "Invalid parameter orthantwise_start specified.",
-        LBFGSERR_INVALID_ORTHANTWISE_END : "Invalid parameter orthantwise_end specified.",
-        LBFGSERR_OUTOFINTERVAL : "The line-search step went out of the interval of uncertainty.",
-        LBFGSERR_INCORRECT_TMINMAX : "A logic error occurred; alternatively, the interval of uncertainty became too small.",
-        LBFGSERR_ROUNDING_ERROR : "A rounding error occurred; alternatively, no line-search step satisfies the sufficient decrease and curvature conditions.",
-        LBFGSERR_MINIMUMSTEP : "The line-search step became smaller than min_step.",
-        LBFGSERR_MAXIMUMSTEP : "The line-search step became larger than max_step.",
-        LBFGSERR_MAXIMUMLINESEARCH : "The line-search routine reaches the maximum number of evaluations.",
-        LBFGSERR_MAXIMUMITERATION : "The algorithm routine reaches the maximum number of iterations.",
-        LBFGSERR_WIDTHTOOSMALL : "Relative width of the interval of uncertainty is at most xtol.",
-        LBFGSERR_INVALIDPARAMETERS : "A logic error (negative line-search step) occurred.",
-        LBFGSERR_INCREASEGRADIENT : "The current search direction increases the objective function value.",
+    LBFGSERR_UNKNOWNERROR: "Unknown error." ,
+    LBFGSERR_LOGICERROR: "Logic error.",
+    LBFGSERR_OUTOFMEMORY: "Insufficient memory.",
+    LBFGSERR_CANCELED: "The minimization process has been canceled.",
+    LBFGSERR_INVALID_N: "Invalid number of variables specified.",
+    LBFGSERR_INVALID_N_SSE: "Invalid number of variables (for SSE) specified.",
+    LBFGSERR_INVALID_X_SSE: "The array x must be aligned to 16 (for SSE).",
+    LBFGSERR_INVALID_EPSILON: "Invalid parameter epsilon specified.",
+    LBFGSERR_INVALID_TESTPERIOD: "Invalid parameter past specified.",
+    LBFGSERR_INVALID_DELTA: "Invalid parameter delta specified.",
+    LBFGSERR_INVALID_LINESEARCH: "Invalid parameter linesearch specified.",
+    LBFGSERR_INVALID_MINSTEP: "Invalid parameter max_step specified.",
+    LBFGSERR_INVALID_MAXSTEP: "Invalid parameter max_step specified.",
+    LBFGSERR_INVALID_FTOL: "Invalid parameter ftol specified.",
+    LBFGSERR_INVALID_WOLFE: "Invalid parameter wolfe specified.",
+    LBFGSERR_INVALID_GTOL: "Invalid parameter gtol specified.",
+    LBFGSERR_INVALID_XTOL: "Invalid parameter xtol specified.",
+    LBFGSERR_INVALID_MAXLINESEARCH:
+        "Invalid parameter max_linesearch specified.",
+    LBFGSERR_INVALID_ORTHANTWISE: "Invalid parameter orthantwise_c specified.",
+    LBFGSERR_INVALID_ORTHANTWISE_START:
+        "Invalid parameter orthantwise_start specified.",
+    LBFGSERR_INVALID_ORTHANTWISE_END:
+        "Invalid parameter orthantwise_end specified.",
+    LBFGSERR_OUTOFINTERVAL:
+        "The line-search step went out of the interval of uncertainty.",
+    LBFGSERR_INCORRECT_TMINMAX:
+        "A logic error occurred;"
+        " alternatively, the interval of uncertainty became too small.",
+    LBFGSERR_ROUNDING_ERROR:
+        "A rounding error occurred;"
+        " alternatively, no line-search step satisfies"
+        " the sufficient decrease and curvature conditions.",
+    LBFGSERR_MINIMUMSTEP: "The line-search step became smaller than min_step.",
+    LBFGSERR_MAXIMUMSTEP: "The line-search step became larger than max_step.",
+    LBFGSERR_MAXIMUMLINESEARCH:
+        "The line-search routine reaches the maximum number of evaluations.",
+    LBFGSERR_MAXIMUMITERATION:
+        "The algorithm routine reaches the maximum number of iterations.",
+    LBFGSERR_WIDTHTOOSMALL:
+        "Relative width of the interval of uncertainty is at most xtol.",
+    LBFGSERR_INVALIDPARAMETERS:
+        "A logic error (negative line-search step) occurred.",
+    LBFGSERR_INCREASEGRADIENT:
+        "The current search direction increases the objective function value.",
 }
 
 class LBFGSError(Exception):
@@ -269,9 +283,9 @@ cdef class LBFGS(object):
         Parameters
         ----------
         f : callable(x, g, *args)
-            Computes function and gradient of function to minimize. Called with the
-            current position vector x, a vector g and *args; must return the value
-            f(x) and set the gradient vector g.
+            Computes function and gradient of function to minimize.
+            Called with the current position vector x, a vector g and *args;
+            must return the value f(x) and set the gradient vector g.
         x0 : array-like
             Initial values. A copy of this array is made prior to optimization.
         progress : callable(x, g, fx, xnorm, gnorm, step, k, ls)
@@ -295,4 +309,7 @@ cdef class LBFGS(object):
 
         if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
             return x_final
-        else: raise LBFGSError(_ERROR_MESSAGES[r])
+        elif r == LBFGSERR_OUTOFMEMORY:
+            raise MemoryError
+        else:
+            raise LBFGSError(_ERROR_MESSAGES[r])
