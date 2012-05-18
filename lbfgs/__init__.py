@@ -2,9 +2,6 @@
 LBFGS and OWL-QN optimization algorithms
 
 Python wrapper around liblbfgs.
-
-Copyright 2011-2012 Lars Buitinck/University of Amsterdam
-License: 3-clause BSD
 """
 
 from ._lowlevel import LBFGS, LBFGSError

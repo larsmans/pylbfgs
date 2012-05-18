@@ -2,10 +2,6 @@
 LBFGS and OWL-QN optimization algorithms
 
 Python wrapper around liblbfgs.
-
-Written by Lars Buitinck.
-Copyright 2011 University of Amsterdam
-License: 3-clause BSD
 """
 
 cimport numpy as np
