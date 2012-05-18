@@ -5,7 +5,7 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 ext_modules = [
-    Extension("lbfgs", ["lbfgs.pyx"],
+    Extension("lbfgs._lowlevel", ["lbfgs/_lowlevel.pyx"],
               libraries=["lbfgs"])
 ]
 

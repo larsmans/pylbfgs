@@ -1,6 +1,8 @@
 .*.swp
+
 *.c
 *.o
+*.pyc
 *.so
 
 build/

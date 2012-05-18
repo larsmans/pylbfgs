@@ -300,10 +300,3 @@ cdef class LBFGS(object):
         if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
             return x_final
         else: raise LBFGSError(_ERROR_MESSAGES[r])
-
-def fmin_lbfgs(f, x0, progress=None, args=()):
-    """Minimize a function using LBFGS or OWL-QN
-
-    See LBFGS.minimize for full documentation.
-    """
-    return LBFGS().minimize(f, x0, progress=progress, args=args)
