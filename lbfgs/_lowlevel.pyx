@@ -15,8 +15,12 @@ cdef extern from "lbfgs.h":
     ctypedef double lbfgsfloatval_t
     ctypedef lbfgsfloatval_t* lbfgsconst_p "const lbfgsfloatval_t *"
 
-    ctypedef lbfgsfloatval_t (*lbfgs_evaluate_t)(void *, lbfgsconst_p, lbfgsfloatval_t *, int, lbfgsfloatval_t)
-    ctypedef int (*lbfgs_progress_t)(void *, lbfgsconst_p, lbfgsconst_p, lbfgsfloatval_t, lbfgsfloatval_t, lbfgsfloatval_t, lbfgsfloatval_t, int, int, int)
+    ctypedef lbfgsfloatval_t (*lbfgs_evaluate_t)(void *, lbfgsconst_p,
+                              lbfgsfloatval_t *, int, lbfgsfloatval_t)
+    ctypedef int (*lbfgs_progress_t)(void *, lbfgsconst_p, lbfgsconst_p,
+                                     lbfgsfloatval_t, lbfgsfloatval_t,
+                                     lbfgsfloatval_t, lbfgsfloatval_t,
+                                     int, int, int)
 
     cdef enum LineSearchAlgo:
         LBFGS_LINESEARCH_DEFAULT,
@@ -127,8 +131,10 @@ cdef int call_progress(void *cb_data_v,
 
     if progress_fn:
         shape[0] = <np.npy_intp>n
-        x_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE, <void *>x)
-        g_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE, <void *>g)
+        x_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE,
+                                               <void *>x)
+        g_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE,
+                                               <void *>g)
 
         return progress_fn(x_array, g_array, fx, xnorm, gnorm, step, k, ls)
     else:
@@ -154,6 +160,7 @@ _LINE_SEARCH_ALGO = {
     'wolfe' : LBFGS_LINESEARCH_BACKTRACKING_WOLFE,
     'strongwolfe' : LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE
 }
+
 
 _ERROR_MESSAGES = {
     LBFGSERR_UNKNOWNERROR: "Unknown error." ,
@@ -203,8 +210,10 @@ _ERROR_MESSAGES = {
         "The current search direction increases the objective function value.",
 }
 
+
 class LBFGSError(Exception):
     pass
+
 
 cdef class LBFGS(object):
     """LBFGS algorithm, wrapped in a class to permit setting parameters"""
@@ -282,9 +291,10 @@ cdef class LBFGS(object):
         Parameters
         ----------
         f : callable(x, g, *args)
-            Computes function and gradient of function to minimize.
-            Called with the current position vector x, a vector g and *args;
-            must return the value f(x) and set the gradient vector g.
+            Computes function to minimize and its gradient.
+            Called with the current position x (a numpy.ndarray), a gradient
+            vector g (a numpy.ndarray) to be filled in and *args.
+            Must return the value at x and set the gradient vector g.
         x0 : array-like
             Initial values. A copy of this array is made prior to optimization.
         progress : callable(x, g, fx, xnorm, gnorm, step, k, ls)
