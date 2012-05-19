@@ -146,7 +146,7 @@ cdef int call_progress(void *cb_data_v,
 
 # Copy an ndarray to a buffer allocated with lbfgs_malloc; needed to get the
 # alignment right for SSE instructions.
-cdef lbfgsfloatval_t *copy_to_lbfgs(x):
+cdef lbfgsfloatval_t *aligned_copy(x):
     n = x.shape[0]
     x_copy = lbfgs_malloc(n)
     if x_copy is NULL:
@@ -312,7 +312,7 @@ cdef class LBFGS(object):
         cdef np.ndarray x_final
 
         x0 = np.atleast_1d(x0)
-        x = copy_to_lbfgs(x0.ravel())
+        x = aligned_copy(x0.ravel())
         n = np.product(x0.shape)
         n_i = n
 
