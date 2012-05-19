@@ -12,8 +12,14 @@ def f(x, g):
 
 
 def progress(x, g, f_x, xnorm, gnorm, step, k, ls):
+    """Report optimization progress."""
     print("x = %8.2g     f(x) = %8.2g     f'(x) = %8.2g" % (x, f_x, g))
 
 
-x0 = float(sys.argv[1])
+try:
+    x0 = float(sys.argv[1])
+except IndexError:
+    print("usage: python %s start-value" % sys.argv[0])
+    sys.exit(1)
+
 print("Minimum found: %f" % lbfgs.fmin_lbfgs(f, x0, progress)[0])
