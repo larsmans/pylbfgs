@@ -106,15 +106,15 @@ cdef lbfgsfloatval_t call_eval(void *cb_data_v,
                                lbfgsconst_p x, lbfgsfloatval_t *g,
                                int n, lbfgsfloatval_t step):
     cdef object cb_data
-    cdef np.npy_intp shape[1]
+    cdef np.npy_intp tshape[1]
 
     callback_data = <object>cb_data_v
-    (f, progress_fn, args) = callback_data
-    shape[0] = <np.npy_intp>n
-    x_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE, <void *>x)
-    g_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE, <void *>g)
+    (f, progress_fn, shape, args) = callback_data
+    tshape[0] = <np.npy_intp>n
+    x_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE, <void *>x)
+    g_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE, <void *>g)
 
-    return f(x_array, g_array, *args)
+    return f(x_array.reshape(shape), g_array.reshape(shape), *args)
 
 
 # Callback into Python progress reporting callable.
@@ -124,19 +124,20 @@ cdef int call_progress(void *cb_data_v,
                        lbfgsfloatval_t xnorm, lbfgsfloatval_t gnorm,
                        lbfgsfloatval_t step, int n, int k, int ls):
     cdef object cb_data
-    cdef np.npy_intp shape[1]
+    cdef np.npy_intp tshape[1]
 
     callback_data = <object>cb_data_v
-    (f, progress_fn, args) = callback_data
+    (f, progress_fn, shape, args) = callback_data
 
     if progress_fn:
-        shape[0] = <np.npy_intp>n
-        x_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE,
+        tshape[0] = <np.npy_intp>n
+        x_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE,
                                                <void *>x)
-        g_array = np.PyArray_SimpleNewFromData(1, shape, np.NPY_DOUBLE,
+        g_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE,
                                                <void *>g)
 
-        r = progress_fn(x_array, g_array, fx, xnorm, gnorm, step, k, ls)
+        r = progress_fn(x_array.reshape(shape), g_array.reshape(shape), fx,
+                        xnorm, gnorm, step, k, ls)
         # TODO what happens when the callback returns the wrong type?
         return 0 if r is None else r
     else:
@@ -304,18 +305,23 @@ cdef class LBFGS(object):
             Arbitrary list of arguments, passed on to the function f as *args.
         """
 
-        cdef int n
+        cdef np.npy_intp n
+        cdef int n_i
         cdef int r
         cdef lbfgsfloatval_t *x
         cdef np.ndarray x_final
 
         x0 = np.atleast_1d(x0)
-        x = copy_to_lbfgs(x0)
-        n = x0.shape[0]
+        x = copy_to_lbfgs(x0.ravel())
+        n = np.product(x0.shape)
+        n_i = n
 
-        x_final = np.empty(n, dtype=np.double)
+        if n_i != n:
+            raise LBFGSError("Array of %d elements too large to handle" % n)
 
-        callback_data = (f, progress, args)
+        x_final = np.empty(x0.shape, dtype=np.double)
+
+        callback_data = (f, progress, x0.shape, args)
         r = lbfgs(n, x, <lbfgsfloatval_t *>x_final.data, call_eval,
                   call_progress, <void *>callback_data, &self.params)
 
