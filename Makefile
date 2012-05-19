@@ -1,8 +1,10 @@
-all: lbfgs.so
+all: inplace
 
 clean:
 	rm -rf build
-	rm -f 'lbfgs/_lowlevel.{c,o,so}'
+	rm -f lbfgs/_lowlevel.c
+	rm -f lbfgs/_lowlevel.o
+	rm -f lbfgs/_lowlevel.so
 
 install: all
 	python setup.py install
