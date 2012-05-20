@@ -1,7 +1,8 @@
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_greater, assert_raises
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 
 from lbfgs import LBFGS, LBFGSError, fmin_lbfgs
+import numpy as np
 
 
 def test_fmin_lbfgs():
@@ -14,13 +15,30 @@ def test_fmin_lbfgs():
 
 
 def test_2d():
-    def f(x, g, *args):
+    def f(x, g, f_calls):
+        #f_calls, = args
         assert_equal(x.shape, (2, 2))
         assert_equal(g.shape, x.shape)
         g[:] = 2 * x
+        f_calls[0] += 1
         return (x ** 2).sum()
 
-    xmin = fmin_lbfgs(f, [[10., 100.], [44., 55.]])
+    def progress(x, g, fx, xnorm, gnorm, step, k, ls, p_calls):
+        assert_equal(x.shape, (2, 2))
+        assert_equal(g.shape, x.shape)
+
+        assert_equal(np.sqrt((x ** 2).sum()), xnorm)
+        assert_equal(np.sqrt((g ** 2).sum()), gnorm)
+
+        p_calls[0] += 1
+        return 0
+
+    f_calls = [0]
+    p_calls = [0]
+
+    xmin = fmin_lbfgs(f, [[10., 100.], [44., 55.]], progress, args=[f_calls])
+    assert_greater(f_calls, 0)
+    assert_greater(p_calls, 0)
     assert_array_almost_equal(xmin, [[0, 0], [0, 0]])
 
 

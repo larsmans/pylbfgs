@@ -137,7 +137,7 @@ cdef int call_progress(void *cb_data_v,
                                                <void *>g)
 
         r = progress_fn(x_array.reshape(shape), g_array.reshape(shape), fx,
-                        xnorm, gnorm, step, k, ls)
+                        xnorm, gnorm, step, k, ls, *args)
         # TODO what happens when the callback returns the wrong type?
         return 0 if r is None else r
     else:
@@ -300,9 +300,16 @@ cdef class LBFGS(object):
             Must return the value at x and set the gradient vector g.
         x0 : array-like
             Initial values. A copy of this array is made prior to optimization.
-        progress : callable(x, g, fx, xnorm, gnorm, step, k, ls)
+        progress : callable(x, g, fx, xnorm, gnorm, step, k, num_eval, *args),
+                   optional
+            If not None, called at each iteration after the call to f with the
+            current values of x, g and f(x), the L2 norms of x and g, the line
+            search step, the iteration number, the number of evaluations at
+            this iteration and args (see below).
+            If the return value from this callable is not 0 and not None,
+            optimization is stopped and LBFGSError is raised.
         args : sequence
-            Arbitrary list of arguments, passed on to the function f as *args.
+            Arbitrary list of arguments, passed on to f and progress as *args.
         """
 
         cdef np.npy_intp n
