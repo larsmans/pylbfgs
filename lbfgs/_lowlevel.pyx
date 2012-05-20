@@ -146,7 +146,7 @@ cdef int call_progress(void *cb_data_v,
 
 # Copy an ndarray to a buffer allocated with lbfgs_malloc; needed to get the
 # alignment right for SSE instructions.
-cdef lbfgsfloatval_t *aligned_copy(x):
+cdef lbfgsfloatval_t *aligned_copy(x) except NULL:
     n = x.shape[0]
     x_copy = lbfgs_malloc(n)
     if x_copy is NULL:
@@ -315,23 +315,28 @@ cdef class LBFGS(object):
         cdef np.npy_intp n
         cdef int n_i
         cdef int r
-        cdef lbfgsfloatval_t *x
+        cdef lbfgsfloatval_t *x_a
         cdef np.ndarray x_final
 
+        if not callable(f):
+            raise TypeError("f must be callable, got %s" % type(f))
+        if progress is not None and not callable(progress):
+            raise TypeError("progress must be callable, got %s" % type(f))
+
         x0 = np.atleast_1d(x0)
-        x = aligned_copy(x0.ravel())
+        n = np.product(x0.shape)
+
+        n_i = n
+        if n_i != n:
+            raise LBFGSError("Array of %d elements too large to handle" % n)
+
+        x_a = aligned_copy(x0.ravel())
 
         try:
-            n = np.product(x0.shape)
-            n_i = n
-
-            if n_i != n:
-                raise LBFGSError("Array of %d elements too large to handle" % n)
-
             x_final = np.empty(x0.shape, dtype=np.double)
 
             callback_data = (f, progress, x0.shape, args)
-            r = lbfgs(n, x, <lbfgsfloatval_t *>x_final.data, call_eval,
+            r = lbfgs(n, x_a, <lbfgsfloatval_t *>x_final.data, call_eval,
                       call_progress, <void *>callback_data, &self.params)
 
             if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
@@ -342,4 +347,4 @@ cdef class LBFGS(object):
                 raise LBFGSError(_ERROR_MESSAGES[r])
 
         finally:
-            lbfgs_free(x)
+            lbfgs_free(x_a)

@@ -54,3 +54,9 @@ def test_class_interface():
 
     opt.max_iterations = 1
     assert_raises(LBFGSError, opt.minimize, f, 1e7)
+
+
+def test_input_validation():
+    assert_raises(TypeError, fmin_lbfgs, [], 1e4)
+    assert_raises(TypeError, fmin_lbfgs, lambda x: x, 1e4, "ham")
+    assert_raises(TypeError, fmin_lbfgs, lambda x: x, "spam")
