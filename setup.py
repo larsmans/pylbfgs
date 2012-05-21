@@ -16,6 +16,17 @@ setup(
     author="Lars Buitinck",
     author_email="L.J.Buitinck@uva.nl",
 
+    classifiers=[
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: POSIX",
+        "Programming Language :: Cython",
+        "Programming Language :: Python",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Software Development",
+    ],
+
     cmdclass={"build_ext" : build_ext},
     ext_modules=ext_modules,
     install_requires=["numpy"],
