@@ -313,21 +313,26 @@ cdef class LBFGS(object):
 
         x0 = np.atleast_1d(x0)
         x = aligned_copy(x0.ravel())
-        n = np.product(x0.shape)
-        n_i = n
 
-        if n_i != n:
-            raise LBFGSError("Array of %d elements too large to handle" % n)
+        try:
+            n = np.product(x0.shape)
+            n_i = n
 
-        x_final = np.empty(x0.shape, dtype=np.double)
+            if n_i != n:
+                raise LBFGSError("Array of %d elements too large to handle" % n)
 
-        callback_data = (f, progress, x0.shape, args)
-        r = lbfgs(n, x, <lbfgsfloatval_t *>x_final.data, call_eval,
-                  call_progress, <void *>callback_data, &self.params)
+            x_final = np.empty(x0.shape, dtype=np.double)
 
-        if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
-            return x_final
-        elif r == LBFGSERR_OUTOFMEMORY:
-            raise MemoryError
-        else:
-            raise LBFGSError(_ERROR_MESSAGES[r])
+            callback_data = (f, progress, x0.shape, args)
+            r = lbfgs(n, x, <lbfgsfloatval_t *>x_final.data, call_eval,
+                      call_progress, <void *>callback_data, &self.params)
+
+            if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
+                return x_final
+            elif r == LBFGSERR_OUTOFMEMORY:
+                raise MemoryError
+            else:
+                raise LBFGSError(_ERROR_MESSAGES[r])
+
+        finally:
+            lbfgs_free(x)
