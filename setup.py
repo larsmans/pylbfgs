@@ -3,9 +3,11 @@
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
+import numpy as np
 
 ext_modules = [
     Extension("lbfgs._lowlevel", ["lbfgs/_lowlevel.pyx"],
+              include_dirs=[np.get_include()],
               libraries=["lbfgs"])
 ]
 
@@ -27,6 +29,6 @@ setup(
         "Topic :: Software Development",
     ],
 
-    cmdclass={"build_ext" : build_ext},
+    cmdclass={"build_ext": build_ext},
     ext_modules=ext_modules,
 )
