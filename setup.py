@@ -7,17 +7,9 @@ from Cython.Distutils import build_ext
 import numpy as np
 
 ext_modules = [
-    Extension("lbfgs._lowlevel", ["lbfgs/_lowlevel.pyx"],
-              include_dirs=[np.get_include(), 'liblbfgs'],
-              libraries=["lbfgs"])
+    Extension("lbfgs._lowlevel", ["lbfgs/_lowlevel.pyx", "liblbfgs/lbfgs.c"],
+              include_dirs=[np.get_include(), 'liblbfgs']),
 ]
-
-liblbfgs = ('lbfgs', {
-    'sources': ['liblbfgs/lbfgs.c'],
-    'include_dirs': ['liblbfgs'],
-    'extra_compile_args': [
-        '-no-undefined'
-    ]})
 
 
 setup(
@@ -26,7 +18,6 @@ setup(
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck",
     author_email="L.J.Buitinck@uva.nl",
-    libraries=[liblbfgs],
     packages=['lbfgs'],
     classifiers=[
         "Intended Audience :: Developers",
