@@ -50,7 +50,7 @@ def test_class_interface():
     opt = LBFGS()
     opt.max_iterations = 3
 
-    assert_array_equal(opt.minimize(f, 1e6), [1])
+    assert_array_equal(opt.minimize(f, 1e6), [0])
 
     opt.max_iterations = 1
     assert_raises(LBFGSError, opt.minimize, f, 1e7)

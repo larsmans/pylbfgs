@@ -316,7 +316,7 @@ cdef class LBFGS(object):
         cdef int n_i
         cdef int r
         cdef lbfgsfloatval_t *x_a
-        cdef np.ndarray x_final
+        cdef np.ndarray fx_final
 
         if not callable(f):
             raise TypeError("f must be callable, got %s" % type(f))
@@ -326,6 +326,9 @@ cdef class LBFGS(object):
         x0 = np.atleast_1d(x0)
         n = np.product(x0.shape)
 
+        cdef np.npy_intp tshape[1]
+        tshape[0] = <np.npy_intp>n
+
         n_i = n
         if n_i != n:
             raise LBFGSError("Array of %d elements too large to handle" % n)
@@ -333,14 +336,18 @@ cdef class LBFGS(object):
         x_a = aligned_copy(x0.ravel())
 
         try:
-            x_final = np.empty(x0.shape, dtype=np.double)
+            fx_final = np.empty(1, dtype=np.double)
 
             callback_data = (f, progress, x0.shape, args)
-            r = lbfgs(n, x_a, <lbfgsfloatval_t *>x_final.data, call_eval,
+            r = lbfgs(n, x_a, <lbfgsfloatval_t *>fx_final.data, call_eval,
                       call_progress, <void *>callback_data, &self.params)
 
             if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
-                return x_final
+
+                x_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE,
+                                                       <void *>x_a).copy()
+
+                return x_array.reshape(x0.shape)
             elif r == LBFGSERR_OUTOFMEMORY:
                 raise MemoryError
             else:
@@ -348,3 +355,4 @@ cdef class LBFGS(object):
 
         finally:
             lbfgs_free(x_a)
+
