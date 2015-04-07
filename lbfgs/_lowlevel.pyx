@@ -316,7 +316,7 @@ cdef class LBFGS(object):
         cdef int n_i
         cdef int r
         cdef lbfgsfloatval_t *x_a
-        cdef np.ndarray fx_final
+        cdef lbfgsfloatval_t* fx_final = NULL
 
         if not callable(f):
             raise TypeError("f must be callable, got %s" % type(f))
@@ -336,10 +336,8 @@ cdef class LBFGS(object):
         x_a = aligned_copy(x0.ravel())
 
         try:
-            fx_final = np.empty(1, dtype=np.double)
-
             callback_data = (f, progress, x0.shape, args)
-            r = lbfgs(n, x_a, <lbfgsfloatval_t *>fx_final.data, call_eval,
+            r = lbfgs(n, x_a, fx_final, call_eval,
                       call_progress, <void *>callback_data, &self.params)
 
             if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
