@@ -12,7 +12,7 @@ python:
 - '3.4'
 install:
 - pip install numpy	
-- pip install requirements.txt
+- pip install -r requirements.txt
 - cython lbfgs/_lowlevel.pyx
 - python setup.py develop
 script:
