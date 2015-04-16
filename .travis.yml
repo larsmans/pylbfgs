@@ -1,0 +1,19 @@
+branches:
+  only:
+  - master
+language: python
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+  irc: chat.freenode.net#dedupe
+python:
+- "2.7_with_system_site_packages"
+- '3.4'
+install:
+- pip install numpy	
+- pip install requirements.txt
+- cython lbfgs/_lowlevel.pyx
+- python setup.py develop
+script:
+- nosetests
