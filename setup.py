@@ -1,23 +1,45 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
-from distutils.command.build_clib import build_clib
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
-import numpy as np
+from setuptools import setup, Extension
 
-ext_modules = [
-    Extension("lbfgs._lowlevel", ["lbfgs/_lowlevel.pyx", "liblbfgs/lbfgs.c"],
-              include_dirs=[np.get_include(), 'liblbfgs']),
-]
+# from Michael Hoffman's http://www.ebi.ac.uk/~hoffman/software/sunflower/
+class NumpyExtension(Extension):
+
+    def __init__(self, *args, **kwargs):
+        Extension.__init__(self, *args, **kwargs)
+
+        self._include_dirs = self.include_dirs
+        del self.include_dirs  # restore overwritten property
+
+    # warning: Extension is a classic class so it's not really read-only
+
+    def get_include_dirs(self):
+        from numpy import get_include
+
+        return self._include_dirs + [get_include()]
+
+    def set_include_dirs(self, value):
+        self._include_dirs = value
+
+    def del_include_dirs(self):
+        pass
+        
+    include_dirs = property(get_include_dirs, 
+                            set_include_dirs, 
+                            del_include_dirs)
+
 
 setup(
     name="PyLBFGS",
-    version="0.0",
+    version="0.1.2",
     description="LBFGS and OWL-QN optimization algorithms",
-    author="Lars Buitinck",
-    author_email="L.J.Buitinck@uva.nl",
+    author="Lars Buitinck, Forest Gregg",
+    author_email="fgregg@gmail.com",
     packages=['lbfgs'],
+    install_requires=['numpy'],
+    ext_modules=[NumpyExtension('lbfgs._lowlevel', 
+                                ['lbfgs/_lowlevel.c', 'liblbfgs/lbfgs.c'],
+                                include_dirs=['liblbfgs'])],
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
@@ -28,7 +50,5 @@ setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development",
     ],
-    cmdclass={"build_clib" : build_clib, "build_ext": build_ext},
-    ext_modules=ext_modules
 )
 
