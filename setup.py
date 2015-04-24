@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-
+import sys
 from setuptools import setup, Extension
+
 
 # from Michael Hoffman's http://www.ebi.ac.uk/~hoffman/software/sunflower/
 class NumpyExtension(Extension):
@@ -28,10 +29,14 @@ class NumpyExtension(Extension):
                             set_include_dirs, 
                             del_include_dirs)
 
+include_dirs = []
+
+if sys.platform == 'win32':
+    include_dirs.append('compat/win32')
 
 setup(
     name="PyLBFGS",
-    version="0.1.2",
+    version="0.1.4",
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck, Forest Gregg",
     author_email="fgregg@gmail.com",
@@ -39,7 +44,7 @@ setup(
     install_requires=['numpy'],
     ext_modules=[NumpyExtension('lbfgs._lowlevel', 
                                 ['lbfgs/_lowlevel.c', 'liblbfgs/lbfgs.c'],
-                                include_dirs=['liblbfgs'])],
+                                include_dirs=include_dirs)],
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
