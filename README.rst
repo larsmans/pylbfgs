@@ -1,6 +1,10 @@
 PyLBFGS
 =======
 
+.. image:: https://travis-ci.org/datamade/pylbfgs.svg?branch=master
+    :target: https://travis-ci.org/datamade/pylbfgs
+
+
 This is a Python wrapper around Naoaki Okazaki (chokkan)'s liblbfgs_ library
 of quasi-Newton optimization routines (limited memory BFGS and OWL-QN).
 
