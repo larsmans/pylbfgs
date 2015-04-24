@@ -23,7 +23,7 @@ def test_2d():
         f_calls[0] += 1
         return (x ** 2).sum()
 
-    def progress(x, g, fx, xnorm, gnorm, step, k, ls, p_calls):
+    def progress(x, g, fx, xnorm, gnorm, step, k, ls, *args):
         assert_equal(x.shape, (2, 2))
         assert_equal(g.shape, x.shape)
 
@@ -37,8 +37,8 @@ def test_2d():
     p_calls = [0]
 
     xmin = fmin_lbfgs(f, [[10., 100.], [44., 55.]], progress, args=[f_calls])
-    assert_greater(f_calls, 0)
-    assert_greater(p_calls, 0)
+    assert_greater(f_calls[0], 0)
+    assert_greater(p_calls[0], 0)
     assert_array_almost_equal(xmin, [[0, 0], [0, 0]])
 
 
