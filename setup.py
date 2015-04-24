@@ -29,14 +29,14 @@ class NumpyExtension(Extension):
                             set_include_dirs, 
                             del_include_dirs)
 
-include_dirs = []
+include_dirs = ['liblbfgs']
 
 if sys.platform == 'win32':
     include_dirs.append('compat/win32')
 
 setup(
     name="PyLBFGS",
-    version="0.1.4",
+    version="0.1.6",
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck, Forest Gregg",
     author_email="fgregg@gmail.com",
