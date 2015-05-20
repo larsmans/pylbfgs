@@ -36,7 +36,7 @@ if sys.platform == 'win32':
 
 setup(
     name="PyLBFGS",
-    version="0.1.7",
+    version="0.1.8",
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck, Forest Gregg",
     author_email="fgregg@gmail.com",

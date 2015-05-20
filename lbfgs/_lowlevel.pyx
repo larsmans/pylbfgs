@@ -6,7 +6,7 @@ Python wrapper around liblbfgs.
 
 cimport numpy as np
 import numpy as np
-
+import warnings
 
 np.import_array()   # initialize Numpy
 
@@ -387,6 +387,12 @@ cdef class LBFGS(object):
 
             if r == LBFGS_SUCCESS or r == LBFGS_ALREADY_MINIMIZED:
 
+                x_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE,
+                                                       <void *>x_a).copy()
+
+                return x_array.reshape(x0.shape)
+            elif r == LBFGSERR_ROUNDING_ERROR or LBFGSERR_MAXIMUMLINESEARCH :
+                warnings.warn(_ERROR_MESSAGES[r])
                 x_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE,
                                                        <void *>x_a).copy()
 
