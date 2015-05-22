@@ -391,7 +391,7 @@ cdef class LBFGS(object):
                                                        <void *>x_a).copy()
 
                 return x_array.reshape(x0.shape)
-            elif r == LBFGSERR_ROUNDING_ERROR or LBFGSERR_MAXIMUMLINESEARCH :
+            elif r in (LBFGSERR_ROUNDING_ERROR, LBFGSERR_MAXIMUMLINESEARCH) :
                 warnings.warn(_ERROR_MESSAGES[r])
                 x_array = np.PyArray_SimpleNewFromData(1, tshape, np.NPY_DOUBLE,
                                                        <void *>x_a).copy()
