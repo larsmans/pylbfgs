@@ -24,6 +24,8 @@ Hacking
 =======
 Type::
 
+    pip install -r requirements.txt
+    cython lbfgs/_lowlevel.pyx
     python setup.py build_ext -i
 
 to build PyLBFGS in-place, i.e. without installing it.
