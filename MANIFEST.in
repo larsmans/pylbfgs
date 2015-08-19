@@ -1,1 +1,2 @@
 include compat/win32/stdint.h
+graft liblbfgs

@@ -45,8 +45,8 @@ class NumpyExtension(Extension):
 include_dirs = ['liblbfgs']
 
 setup(
-    name="PyLBFGS",
-    version="0.1.9",
+    name="pylbfgs",
+    version="0.1.12",
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck, Forest Gregg",
     author_email="fgregg@gmail.com",
