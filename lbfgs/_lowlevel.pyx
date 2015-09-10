@@ -10,6 +10,51 @@ import warnings
 
 np.import_array()   # initialize Numpy
 
+ctypedef enum LineSearchAlgo :
+    LBFGS_LINESEARCH_DEFAULT = 0,
+    LBFGS_LINESEARCH_MORETHUENTE = 0,
+    LBFGS_LINESEARCH_BACKTRACKING_ARMIJO = 1,
+    LBFGS_LINESEARCH_BACKTRACKING = 2,
+    LBFGS_LINESEARCH_BACKTRACKING_WOLFE = 2,
+    LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE = 3,
+
+ctypedef enum ReturnCode:
+    LBFGS_SUCCESS = 0,
+    LBFGS_CONVERGENCE = 0,
+    LBFGS_STOP,
+    LBFGS_ALREADY_MINIMIZED,
+    LBFGSERR_UNKNOWNERROR = -1024,
+    LBFGSERR_LOGICERROR,
+    LBFGSERR_OUTOFMEMORY,
+    LBFGSERR_CANCELED,
+    LBFGSERR_INVALID_N,
+    LBFGSERR_INVALID_N_SSE,
+    LBFGSERR_INVALID_X_SSE,
+    LBFGSERR_INVALID_EPSILON,
+    LBFGSERR_INVALID_TESTPERIOD,
+    LBFGSERR_INVALID_DELTA,
+    LBFGSERR_INVALID_LINESEARCH,
+    LBFGSERR_INVALID_MINSTEP,
+    LBFGSERR_INVALID_MAXSTEP,
+    LBFGSERR_INVALID_FTOL,
+    LBFGSERR_INVALID_WOLFE,
+    LBFGSERR_INVALID_GTOL,
+    LBFGSERR_INVALID_XTOL,
+    LBFGSERR_INVALID_MAXLINESEARCH,
+    LBFGSERR_INVALID_ORTHANTWISE,
+    LBFGSERR_INVALID_ORTHANTWISE_START,
+    LBFGSERR_INVALID_ORTHANTWISE_END,
+    LBFGSERR_OUTOFINTERVAL,
+    LBFGSERR_INCORRECT_TMINMAX,
+    LBFGSERR_ROUNDING_ERROR,
+    LBFGSERR_MINIMUMSTEP,
+    LBFGSERR_MAXIMUMSTEP,
+    LBFGSERR_MAXIMUMLINESEARCH,
+    LBFGSERR_MAXIMUMITERATION,
+    LBFGSERR_WIDTHTOOSMALL,
+    LBFGSERR_INVALIDPARAMETERS,
+    LBFGSERR_INCREASEGRADIENT
+
 
 cdef extern from "lbfgs.h":
     ctypedef double lbfgsfloatval_t
@@ -21,56 +66,14 @@ cdef extern from "lbfgs.h":
                                      lbfgsfloatval_t, lbfgsfloatval_t,
                                      lbfgsfloatval_t, lbfgsfloatval_t,
                                      int, int, int)
-
-    cdef enum LineSearchAlgo:
-        LBFGS_LINESEARCH_DEFAULT,
-        LBFGS_LINESEARCH_MORETHUENTE,
-        LBFGS_LINESEARCH_BACKTRACKING_ARMIJO,
-        LBFGS_LINESEARCH_BACKTRACKING_WOLFE,
-        LBFGS_LINESEARCH_BACKTRACKING_STRONG_WOLFE
-
-    cdef enum ReturnCode:
-        LBFGS_SUCCESS,
-        LBFGS_ALREADY_MINIMIZED,
-        LBFGSERR_UNKNOWNERROR,
-        LBFGSERR_LOGICERROR,
-        LBFGSERR_OUTOFMEMORY,
-        LBFGSERR_CANCELED,
-        LBFGSERR_INVALID_N,
-        LBFGSERR_INVALID_N_SSE,
-        LBFGSERR_INVALID_X_SSE,
-        LBFGSERR_INVALID_EPSILON,
-        LBFGSERR_INVALID_TESTPERIOD,
-        LBFGSERR_INVALID_DELTA,
-        LBFGSERR_INVALID_LINESEARCH,
-        LBFGSERR_INVALID_MINSTEP,
-        LBFGSERR_INVALID_MAXSTEP,
-        LBFGSERR_INVALID_FTOL,
-        LBFGSERR_INVALID_WOLFE,
-        LBFGSERR_INVALID_GTOL,
-        LBFGSERR_INVALID_XTOL,
-        LBFGSERR_INVALID_MAXLINESEARCH,
-        LBFGSERR_INVALID_ORTHANTWISE,
-        LBFGSERR_INVALID_ORTHANTWISE_START,
-        LBFGSERR_INVALID_ORTHANTWISE_END,
-        LBFGSERR_OUTOFINTERVAL,
-        LBFGSERR_INCORRECT_TMINMAX,
-        LBFGSERR_ROUNDING_ERROR,
-        LBFGSERR_MINIMUMSTEP,
-        LBFGSERR_MAXIMUMSTEP,
-        LBFGSERR_MAXIMUMLINESEARCH,
-        LBFGSERR_MAXIMUMITERATION,
-        LBFGSERR_WIDTHTOOSMALL,
-        LBFGSERR_INVALIDPARAMETERS,
-        LBFGSERR_INCREASEGRADIENT
-
+ 
     ctypedef struct lbfgs_parameter_t:
         int m
         lbfgsfloatval_t epsilon
         int past
         lbfgsfloatval_t delta
         int max_iterations
-        int linesearch
+        LineSearchAlgo linesearch
         int max_linesearch
         lbfgsfloatval_t min_step
         lbfgsfloatval_t max_step
@@ -82,8 +85,8 @@ cdef extern from "lbfgs.h":
         int orthantwise_start
         int orthantwise_end
 
-    int lbfgs(int, lbfgsfloatval_t *, lbfgsfloatval_t *, lbfgs_evaluate_t,
-              lbfgs_progress_t, void *, lbfgs_parameter_t *)
+    ReturnCode lbfgs(int, lbfgsfloatval_t *, lbfgsfloatval_t *, lbfgs_evaluate_t,
+                     lbfgs_progress_t, void *, lbfgs_parameter_t *)
 
     void lbfgs_parameter_init(lbfgs_parameter_t *)
     lbfgsfloatval_t *lbfgs_malloc(int)
