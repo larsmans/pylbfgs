@@ -1,6 +1,19 @@
 #!/usr/bin/env python
 import sys
 from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
+
+class custom_build_ext(build_ext):
+    def finalize_options(self):
+        build_ext.finalize_options(self)
+        if self.compiler is None:
+            compiler = get_default_compiler()
+        else:
+            compiler = self.compiler
+
+        if compiler == 'msvc':
+            include_dirs.append('compat/win32')
+
 
 
 # from Michael Hoffman's http://www.ebi.ac.uk/~hoffman/software/sunflower/
@@ -31,9 +44,6 @@ class NumpyExtension(Extension):
 
 include_dirs = ['liblbfgs']
 
-if sys.platform == 'win32':
-    include_dirs.append('compat/win32')
-
 setup(
     name="PyLBFGS",
     version="0.1.9",
@@ -55,5 +65,6 @@ setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development",
     ],
+    'cmdclass': {'build_ext': custom_build_ext},
 )
 
