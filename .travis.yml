@@ -49,5 +49,5 @@ after_success:
 - if [[ $TRAVIS_TAG && "$TRAVIS_OS_NAME" == "linux" ]]; then python setup.py sdist upload; fi
 env:
   global:
-  - secure: fUNnl9SeM8JUqon4pANwDazoQB4DXClWrWsPdeXcEZMomlMU/xKCH/cEOCJD7O3rH79M0rt+BPQfugTcBg3wE3QEIKQL9qh6qjaKbdaDqDS9bdNTUmwQvJV11jZ7ZDbZhbmmV6T+yuVtt33GsVMTT09jdplQu/OgqTn/zlsKyX4=
+  - secure: ODOm9ZtMYY2+SmTY/cognMTC06hixMzRR7CWwHcCZnNJcmfC2+fEKhBLf/vigHGvnrd1fNsDN/QNX43yfdqkD6q7KAYMxn2BsUdbNvwcfwS2gk6J4nO8yzeas0aisar8WqU6sg3EZUw6WlrXIYsnnXVfTpAksGZ4kPeZNIM1Fq0=
 
