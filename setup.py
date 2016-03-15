@@ -47,7 +47,7 @@ include_dirs = ['liblbfgs']
 
 setup(
     name="PyLBFGS",
-    version="0.2.0.2",
+    version="0.2.0.3",
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck, Forest Gregg",
     author_email="fgregg@gmail.com",
