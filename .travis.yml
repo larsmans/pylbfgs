@@ -1,19 +1,53 @@
 branches:
   only:
   - master
+  - /^v.*$/
 language: python
 notifications:
   email:
     on_success: change
     on_failure: always
   irc: chat.freenode.net#dedupe
-python:
-- "2.7_with_system_site_packages"
-- '3.4'
+matrix:
+  include:
+  - os: linux
+    python: 3.4
+  - os: linux
+    python: 2.7
+  - os: osx
+    language: generic
+    env: TERRYFY_PYTHON='system 2'
+  - os: osx
+    language: generic
+    env: TERRYFY_PYTHON='homebrew 2'
+  - os: osx
+    language: generic
+    env: TERRYFY_PYTHON='homebrew 3'
+before_install:
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git clone https://github.com/MacPython/terryfy;
+  fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source terryfy/travis_tools.sh; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then get_python_environment $TERRYFY_PYTHON
+  venv; fi
+- if [[ "$TERRYFY_PYTHON" == "homebrew 3" ]]; then alias pip=`which pip3` ; fi
 install:
-- pip install numpy	
+- pip install numpy
 - pip install -r requirements.txt
 - cython lbfgs/_lowlevel.pyx
-- python setup.py develop
+- pip install -e .
 script:
 - nosetests
+after_success:
+- coveralls
+- echo [distutils]                                  > ~/.pypirc
+- echo index-servers = pypi                        >> ~/.pypirc
+- echo [pypi]                                      >> ~/.pypirc
+- echo repository=https://pypi.python.org/pypi     >> ~/.pypirc
+- echo username=fgregg                             >> ~/.pypirc
+- echo password=$PYPIPASSWORD                      >> ~/.pypirc
+- if [[ $TRAVIS_TAG && "$TRAVIS_OS_NAME" == "osx" ]]; then python setup.py bdist_wheel upload; fi
+- if [[ $TRAVIS_TAG && "$TRAVIS_OS_NAME" == "linux" ]]; then python setup.py sdist upload; fi
+env:
+  global:
+  - secure: fUNnl9SeM8JUqon4pANwDazoQB4DXClWrWsPdeXcEZMomlMU/xKCH/cEOCJD7O3rH79M0rt+BPQfugTcBg3wE3QEIKQL9qh6qjaKbdaDqDS9bdNTUmwQvJV11jZ7ZDbZhbmmV6T+yuVtt33GsVMTT09jdplQu/OgqTn/zlsKyX4=
+
