@@ -1,32 +1,31 @@
 PyLBFGS
 =======
 
+.. image:: https://travis-ci.org/datamade/pylbfgs.svg?branch=master
+    :target: https://travis-ci.org/datamade/pylbfgs
+
+
 This is a Python wrapper around Naoaki Okazaki (chokkan)'s liblbfgs_ library
 of quasi-Newton optimization routines (limited memory BFGS and OWL-QN).
 
-This package aims to provide a cleaner interface to the LBFGS algorithm
-than is currently available in SciPy_,
-and to provide the OWL-QN algorithm to Python users.
-
-To build PyLBFGS, run ``python setup.py build_ext``.
+This package aims to provide a cleaner interface to the LBFGS
+algorithm than is currently available in SciPy_, and to provide the
+OWL-QN algorithm to Python users.
 
 
 Installing
 ==========
-PyLBFGS is written in Cython_ and requires setuptools_, NumPy_, liblbfgs and
-a relatively recent Cython compiler to build (tested with 0.15.1).
-
 Type::
 
-    python setup.py install
-
-(optionally prefixed with ``sudo``) to build and install PyLBFGS.
+    pip install pylbfgs
 
 
 Hacking
 =======
 Type::
 
+    pip install -r requirements.txt
+    cython lbfgs/_lowlevel.pyx
     python setup.py build_ext -i
 
 to build PyLBFGS in-place, i.e. without installing it.

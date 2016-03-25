@@ -1,24 +1,61 @@
 #!/usr/bin/env python
+import sys
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
+from distutils.ccompiler import get_default_compiler
 
-from distutils.core import setup
-from distutils.command.build_clib import build_clib
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
-import numpy as np
+class custom_build_ext(build_ext):
+    def finalize_options(self):
+        build_ext.finalize_options(self)
+        if self.compiler is None:
+            compiler = get_default_compiler()
+        else:
+            compiler = self.compiler
 
-ext_modules = [
-    Extension("lbfgs._lowlevel", ["lbfgs/_lowlevel.pyx", "liblbfgs/lbfgs.c"],
-              include_dirs=[np.get_include(), 'liblbfgs']),
-]
+        if compiler == 'msvc':
+            include_dirs.append('compat/win32')
 
+
+
+# from Michael Hoffman's http://www.ebi.ac.uk/~hoffman/software/sunflower/
+class NumpyExtension(Extension):
+
+    def __init__(self, *args, **kwargs):
+        Extension.__init__(self, *args, **kwargs)
+
+        self._include_dirs = self.include_dirs
+        del self.include_dirs  # restore overwritten property
+
+    # warning: Extension is a classic class so it's not really read-only
+
+    def get_include_dirs(self):
+        from numpy import get_include
+
+        return self._include_dirs + [get_include()]
+
+    def set_include_dirs(self, value):
+        self._include_dirs = value
+
+    def del_include_dirs(self):
+        pass
+        
+    include_dirs = property(get_include_dirs, 
+                            set_include_dirs, 
+                            del_include_dirs)
+
+include_dirs = ['liblbfgs']
 
 setup(
     name="PyLBFGS",
-    version="0.0",
+    version="0.2.0.3",
     description="LBFGS and OWL-QN optimization algorithms",
-    author="Lars Buitinck",
-    author_email="L.J.Buitinck@uva.nl",
+    author="Lars Buitinck, Forest Gregg",
+    author_email="fgregg@gmail.com",
     packages=['lbfgs'],
+    install_requires=['numpy'],
+    ext_modules=[NumpyExtension('lbfgs._lowlevel', 
+                                ['lbfgs/_lowlevel.c', 'liblbfgs/lbfgs.c'],
+                                include_dirs=include_dirs)],
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
@@ -29,7 +66,6 @@ setup(
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development",
     ],
-
-    cmdclass={"build_clib": build_clib, "build_ext": build_ext},
-    ext_modules=ext_modules
+    cmdclass={'build_ext': custom_build_ext},
 )
+
