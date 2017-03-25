@@ -30,9 +30,9 @@ Type::
 
 to build PyLBFGS in-place, i.e. without installing it.
 
-To run the test suite, make sure you have Nose_ installed, and type::
+To run the test suite, make sure you have pytest_ installed, and type::
 
-    nosetests tests/
+    pytest tests
 
 
 Authors
@@ -46,7 +46,7 @@ Alexis Mignon submitted a patch for error handling.
 
 .. _liblbfgs: http://chokkan.org/software/liblbfgs/
 
-.. _Nose: http://readthedocs.org/docs/nose/
+.. _pytest: http://doc.pytest.org/en/latest/
 
 .. _NumPy: http://numpy.scipy.org/
 
