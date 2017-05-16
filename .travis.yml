@@ -49,6 +49,7 @@ matrix:
 install:
 - pip install --upgrade pip
 - pip install numpy
+- pip freeze
 - pip install --upgrade -r requirements.txt
 - cython lbfgs/_lowlevel.pyx
 - pip install -e .
