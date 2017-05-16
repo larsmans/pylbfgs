@@ -47,12 +47,12 @@ include_dirs = ['liblbfgs']
 
 setup(
     name="PyLBFGS",
-    version="0.2.0.4",
+    version="0.2.0.5",
     description="LBFGS and OWL-QN optimization algorithms",
     author="Lars Buitinck, Forest Gregg",
     author_email="fgregg@gmail.com",
     packages=['lbfgs'],
-    install_requires=['numpy>=1.12'],
+    install_requires=['numpy>=1.12.1'],
     ext_modules=[NumpyExtension('lbfgs._lowlevel', 
                                 ['lbfgs/_lowlevel.c', 'liblbfgs/lbfgs.c'],
                                 include_dirs=include_dirs)],
