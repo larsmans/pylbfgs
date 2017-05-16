@@ -1,8 +1,8 @@
 PyLBFGS
 =======
 
-.. image:: https://travis-ci.org/datamade/pylbfgs.svg?branch=master
-    :target: https://travis-ci.org/datamade/pylbfgs
+.. image:: https://travis-ci.org/dedupeio/pylbfgs.svg?branch=master
+    :target: https://travis-ci.org/dedupeio/pylbfgs
 
 
 This is a Python wrapper around Naoaki Okazaki (chokkan)'s liblbfgs_ library
