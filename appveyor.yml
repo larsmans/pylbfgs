@@ -3,7 +3,7 @@
 
 environment:
   password:
-    secure: uOcv5TOm/CgwOmiLQhNX+g==
+    secure: WCflARlYtKV2j4dKfsQQVg==
 
   matrix:
     - python : 27
@@ -35,10 +35,10 @@ deploy_script:
   - echo     pypi                                    >> %USERPROFILE%\\.pypirc
   - echo [pypi]                                      >> %USERPROFILE%\\.pypirc
   - echo repository=https://pypi.python.org/pypi     >> %USERPROFILE%\\.pypirc
-  - echo username=fgregg                             >> %USERPROFILE%\\.pypirc
+  - echo username=datamade.wheelbuilder              >> %USERPROFILE%\\.pypirc
   - echo password=%password%                         >> %USERPROFILE%\\.pypirc
   - set HOME=%USERPROFILE%
-  - pip install wheel
-  - ps: if($env:APPVEYOR_REPO_TAG -eq $TRUE) { python -W ignore setup.py bdist_wheel upload }
+  - pip install wheel twine
+  - ps: if($env:APPVEYOR_REPO_TAG -eq $TRUE) { python -W ignore setup.py bdist_wheel; twine upload dist/* }
 
 deploy : on
